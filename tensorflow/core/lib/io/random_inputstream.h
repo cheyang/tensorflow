@@ -44,7 +44,7 @@ class RandomAccessInputStream : public InputStreamInterface {
   }
 
   Status Reset() override { return Seek(0); }
-
+  RandomAccessFile* getfile(){return file_;}
  private:
   RandomAccessFile* file_;  // Not owned.
   int64 pos_ = 0;           // Tracks where we are in the file.
