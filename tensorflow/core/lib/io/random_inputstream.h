@@ -44,9 +44,8 @@ class RandomAccessInputStream : public InputStreamInterface {
   }
 
   Status Reset() override { return Seek(0); }
-
- private:
   RandomAccessFile* file_;  // Not owned.
+ private:
   int64 pos_ = 0;           // Tracks where we are in the file.
   bool owns_file_ = false;
 };

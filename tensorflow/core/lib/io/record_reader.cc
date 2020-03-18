@@ -102,7 +102,11 @@ Status RecordReader::ReadChecksummed(uint64 offset, size_t n, string* result) {
 
   const uint32 masked_crc = core::DecodeFixed32(result->data() + n);
   if (crc32c::Unmask(masked_crc) != crc32c::Value(result->data(), n)) {
-    return errors::DataLoss("corrupted record at ", offset);
+    auto rai = dynamic_cast<RandomAccessInputStream *>(input_stream_.get());
+
+    tensorflow::StringPiece file_name;
+    rai->file_->Name(&file_name);
+    return errors::DataLoss("corrupted record at file:", file_name, " offset: ", offset);
   }
   result->resize(n);
   return Status::OK();
