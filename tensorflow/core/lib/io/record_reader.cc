@@ -56,7 +56,8 @@ RecordReaderOptions RecordReaderOptions::CreateRecordReaderOptions(
 
 RecordReader::RecordReader(RandomAccessFile* file,
                            const RecordReaderOptions& options)
-    : options_(options),
+    : file_(file),
+      options_(options),
       input_stream_(new RandomAccessInputStream(file)),
       last_read_failed_(false) {
   if (options.buffer_size > 0) {
@@ -102,7 +103,11 @@ Status RecordReader::ReadChecksummed(uint64 offset, size_t n, string* result) {
 
   const uint32 masked_crc = core::DecodeFixed32(result->data() + n);
   if (crc32c::Unmask(masked_crc) != crc32c::Value(result->data(), n)) {
-    return errors::DataLoss("corrupted record at ", offset);
+    StringPiece file_name;
+    if (!file_->Name(&file_name).ok()) {
+      return errors::DataLoss("corrupted record at unknown file, offset: ", offset);
+    }
+    return errors::DataLoss("corrupted record at file:", file_name, " offset: ", offset);
   }
   result->resize(n);
   return Status::OK();

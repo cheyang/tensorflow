@@ -108,6 +108,7 @@ class RecordReader {
   RecordReaderOptions options_;
   std::unique_ptr<InputStreamInterface> input_stream_;
   bool last_read_failed_;
+  RandomAccessFile* file_;
 
   std::unique_ptr<Metadata> cached_metadata_;
 
