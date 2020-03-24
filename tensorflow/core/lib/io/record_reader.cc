@@ -110,11 +110,11 @@ Status RecordReader::ReadChecksummed(uint64 offset, size_t n, string* result) {
     const char* buf = result->data();
     std::stringstream ss1, ss2;
     for (uint i = 0; i < 8; ++i) {
-      ss1 << "0x" << std::setw(2) << std::setfill('0') << std::hex
+      ss1 << "0x" << std::hex
         << static_cast<int>(buf[i]) << " ";
     }
     for (uint i = 8; i < 12; ++i) {
-      ss2 << "0x" << std::setw(2) << std::setfill('0') << std::hex
+      ss2 << "0x" << std::hex
         << static_cast<int>(buf[i]) << " ";
     }
     return errors::DataLoss("corrupted record at file:", file_name, " offset: ", offset,
