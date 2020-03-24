@@ -108,13 +108,21 @@ Status RecordReader::ReadChecksummed(uint64 offset, size_t n, string* result) {
       return errors::DataLoss("corrupted record at unknown file, offset: ", offset);
     }
     const char* buf = result->data();
+    std::stringstream ss1, ss2;
+    for (uint i = 0; i < 8; ++i) {
+      ss1 << "0x" << std::setw(2) << std::setfill('0') << std::hex
+        << static_cast<int>(buf[i]) << " ";
+    }
+    for (uint i = 8; i < 12; ++i) {
+      ss2 << "0x" << std::setw(2) << std::setfill('0') << std::hex
+        << static_cast<int>(buf[i]) << " ";
+    }
     return errors::DataLoss("corrupted record at file:", file_name, " offset: ", offset,
           ", n: ", n,
           ", expected crc: ", crc32c::Unmask(masked_crc),
           ", actual crc: ", crc32c::Value(result->data(), n),
-          ", first 8 bytes = ",
-          buf[0], " ", buf[1], " ", buf[2], " ", buf[3], " ",
-          buf[4], " ", buf[5], " ", buf[6], " ", buf[7]);
+          ", first 8 bytes = ", ss1.str(),
+          ", next 4 bytes = ", ss2.str());
   }
   result->resize(n);
   return Status::OK();
